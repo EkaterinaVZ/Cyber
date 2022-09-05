@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from joblib import dump, load
 from pyod.models.auto_encoder import AutoEncoder
 from sklearn.metrics import classification_report
@@ -8,7 +9,7 @@ from sklearn.metrics import classification_report
 class AutoEnc:
     def __init__(self):
         self.anomaly_threshold = None
-        self.model = AutoEncoder(hidden_neurons=[45, 25, 5, 25, 45], epochs=5)
+        self.model = AutoEncoder(hidden_neurons=[44, 25, 5, 25, 44], epochs=5)
 
     def fit(self, data, **kwargs):
         self.model.fit(data)
@@ -16,7 +17,7 @@ class AutoEnc:
     def predict(self, data):
         return self.model.predict(data)
 
-    def get_anomalies(self, x_train, x_test, threshold=None, **kwargs):
+    def get_anomalies(self, x_train, x_test, threshold=None,  **kwargs):
         test_predict = self.predict(x_test)
 
         anomalies_predict = np.empty_like(test_predict)
@@ -29,10 +30,10 @@ class AutoEnc:
 
         self.plot_score(test_predict, title='test dataframe score')
 
-        np.place(anomalies_predict, test_predict >= self.anomaly_threshold, [1])
+        np.place(anomalies_predict, test_predict >= self.anomaly_threshold, [0])
         np.place(anomalies_predict, test_predict < self.anomaly_threshold, [1])
 
-        return test_predict
+        return anomalies_predict
     
 
     def get_train_threshold(self, x_train, print_results=True):
